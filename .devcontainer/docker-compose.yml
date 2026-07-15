@@ -1,0 +1,17 @@
+services:
+  ddm-devcontainer:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    privileged: true
+    volumes:
+      - ..:/workspace:cached
+    environment:
+      RPI_SOURCE_IMG: ${RPI_SOURCE_IMG:-}
+      RPI_SOURCE_IMG_SHA256: ${RPI_SOURCE_IMG_SHA256:-}
+      WORK_DIR: ${WORK_DIR:-/workspace/.work}
+      CACHE_DIR: ${CACHE_DIR:-/workspace/.work}
+      PROCESSING_DIR: ${PROCESSING_DIR:-/tmp/ddm-processing}
+      DIST_DIR: ${DIST_DIR:-/workspace/dist}
+      PADDING_SECTORS: ${PADDING_SECTORS:-8192}
+    command: sleep infinity

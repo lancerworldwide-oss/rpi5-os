@@ -1,0 +1,29 @@
+name: DDM CI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build image builder container
+        run: docker build -t ddm-image-builder .
+
+      - name: Run image pipeline tests
+        run: |
+          docker run --rm --privileged \
+            -v "${GITHUB_WORKSPACE}:/workspace" \
+            -e CACHE_DIR=/workspace/.work \
+            -e PROCESSING_DIR=/tmp/ddm-processing \
+            -e DIST_DIR=/workspace/dist \
+            ddm-image-builder \
+            bash /workspace/scripts/test.sh

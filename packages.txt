@@ -1,0 +1,37 @@
+# Packages to remove from the upstream Raspberry Pi OS Lite arm64 image.
+# One package name per line. Lines starting with # and blank lines are ignored.
+
+# APT notification utilities
+apt-listchanges
+
+# Build toolchain and development tools
+build-essential
+gcc
+g++
+gcc-14
+g++-14
+gcc-14-aarch64-linux-gnu
+g++-14-aarch64-linux-gnu
+gcc-aarch64-linux-gnu
+g++-aarch64-linux-gnu
+cpp
+cpp-14
+cpp-14-aarch64-linux-gnu
+cpp-aarch64-linux-gnu
+binutils-aarch64-linux-gnu
+make
+dpkg-dev
+fakeroot
+gdb
+
+# Runtimes removed from minimal base image
+python3.13
+perl
+
+# Documentation
+manpages
+manpages-dev
+
+# Editors (re-added by NGSW provisioning when needed)
+vim-tiny
+vim-common

@@ -1,0 +1,9 @@
+{
+	"name": "DDM Image Builder",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "ddm-devcontainer",
+	"workspaceFolder": "/workspace",
+	"remoteUser": "user",
+	"shutdownAction": "stopCompose",
+	"postStartCommand": "bash /workspace/.devcontainer/post_start.sh"
+}
