@@ -107,6 +107,21 @@ read_packages() {
     printf '%s\n' "${packages[@]}"
 }
 
+upgrade_packages_in_chroot() {
+    log "Updating package indexes and upgrading installed packages"
+    sudo cp /etc/resolv.conf "${ROOT_MOUNT}/etc/resolv.conf"
+
+    bash "${LIB_DIR}/chroot_exec.sh" /bin/bash -c "
+        set -euo pipefail
+        export DEBIAN_FRONTEND=noninteractive
+        rm -rf /var/lib/apt/lists/*
+        apt-get update
+        apt-get upgrade -y \
+            -o Dpkg::Options::=\"--force-confdef\" \
+            -o Dpkg::Options::=\"--force-confold\"
+    "
+}
+
 purge_packages_in_chroot() {
     local packages
     mapfile -t packages < <(read_packages)
@@ -280,30 +295,33 @@ main() {
     # shellcheck disable=SC1091
     source "${LIB_DIR}/mount_image.sh" "${working_img}" "${MOUNT_BASE}"
 
-    log "Phase 4: Purge packages"
+    log "Phase 4: Update and upgrade packages"
+    upgrade_packages_in_chroot
+
+    log "Phase 5: Purge packages"
     purge_packages_in_chroot
 
-    log "Phase 4b: Record remaining installed packages on host"
+    log "Phase 5b: Record remaining installed packages on host"
     generate_package_manifest "${release_tag}"
 
-    log "Phase 4c: Minimize caches and logs"
+    log "Phase 5c: Minimize caches and logs"
     minimize_in_chroot
 
-    log "Phase 4d: Remove injected QEMU binary from image"
+    log "Phase 5d: Remove injected QEMU binary from image"
     # shellcheck disable=SC1091
     source "${LIB_DIR}/remove_qemu_static.sh"
 
-    log "Phase 5: Unmount, check filesystem, and zero free space"
+    log "Phase 6: Unmount, check filesystem, and zero free space"
     finalize_before_shrink
 
-    log "Phase 6: Shrink and truncate image"
+    log "Phase 7: Shrink and truncate image"
     shrink_image "${working_img}"
 
     local final_name="${release_tag}-ngsw-minimal.img"
     local final_path="${PROCESSING_DIR}/${final_name}"
     mv "${working_img}" "${final_path}"
 
-    log "Phase 7: Package artifact"
+    log "Phase 8: Package artifact"
     package_artifact "${final_path}" "${final_name}"
 
     log "Done: ${DIST_DIR}/${final_name}.tar.gz"

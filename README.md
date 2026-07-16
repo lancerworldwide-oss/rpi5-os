@@ -11,6 +11,7 @@ flowchart TD
     Download["Download pinned Pi OS Lite arm64"]
     Copy["Copy to working.img"]
     Mount["Loop mount + chroot"]
+    Upgrade["apt-get update + upgrade"]
     Purge["APT purge packages.txt"]
     Manifest["Write package manifest to dist/"]
     Minimize["Clean caches and logs"]
@@ -20,7 +21,7 @@ flowchart TD
     Shrink["resize2fs -M + truncate"]
     Package["tar.gz + SHA256 sidecar"]
 
-    Download --> Copy --> Mount --> Purge --> Manifest --> Minimize --> RemoveQemu --> Defrag --> Zero --> Shrink --> Package
+    Download --> Copy --> Mount --> Upgrade --> Purge --> Manifest --> Minimize --> RemoveQemu --> Defrag --> Zero --> Shrink --> Package
 ```
 
 ## Prerequisites
@@ -104,15 +105,16 @@ This shell script is responsible for generating the image. The order of operatio
 2. Validate the download against `RPI_SOURCE_IMG_SHA256` when a checksum is configured.
 3. Copy the source to a working image so a failed run can reuse the download.
 4. Mount the ARM64 working image, prepare bind mounts, and copy in QEMU user-static for chroot.
-5. Chroot into the image and purge packages listed in `packages.txt`.
-6. Write a sorted package manifest to `dist/<release>-ngsw-minimal.packages.txt` on the host (not inside the image).
-7. Minimize the base image by removing temporary files, APT caches, and truncating all regular files under `/var/log` (recursively).
-8. Remove the injected `qemu-aarch64-static` binary from the image filesystem.
-9. Run `e2fsck -f` on the root filesystem.
-10. Zero free space with `zerofree` on the unmounted root partition.
-11. Unmount filesystems and detach the loop device.
-12. Shrink the root filesystem with `resize2fs -M` and truncate the image file to the last used sector plus padding.
-13. Rename the image to indicate it has been minimized, then tar and gzip it into `dist/` with a `.sha256` sidecar.
+5. Chroot into the image and run `apt-get update` + `apt-get upgrade -y` to bring installed packages to the latest versions.
+6. Chroot into the image and purge packages listed in `packages.txt`.
+7. Write a sorted package manifest to `dist/<release>-ngsw-minimal.packages.txt` on the host (not inside the image).
+8. Minimize the base image by removing temporary files, APT caches, and truncating all regular files under `/var/log` (recursively).
+9. Remove the injected `qemu-aarch64-static` binary from the image filesystem.
+10. Run `e2fsck -f` on the root filesystem.
+11. Zero free space with `zerofree` on the unmounted root partition.
+12. Unmount filesystems and detach the loop device.
+13. Shrink the root filesystem with `resize2fs -M` and truncate the image file to the last used sector plus padding.
+14. Rename the image to indicate it has been minimized, then tar and gzip it into `dist/` with a `.sha256` sidecar.
 
 ## Outputs
 
