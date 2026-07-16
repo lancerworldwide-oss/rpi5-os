@@ -1,5 +1,8 @@
-# Packages to remove from the upstream Raspberry Pi OS Lite arm64 image.
+# Packages to remove from the upstream Raspberry Pi OS desktop arm64 image.
 # One package name per line. Lines starting with # and blank lines are ignored.
+# Do not list GPU/VAAPI/V4L/libav packages here. Keep Pi firmware needed for
+# kiosk video (raspi-firmware, firmware-brcm80211, …) unless explicitly listed.
+# Keep dhcpcd-base, iproute2, and netbase (not listed). Leave perl-base alone.
 
 # APT notification utilities
 apt-listchanges
@@ -24,8 +27,11 @@ dpkg-dev
 fakeroot
 gdb
 
-# Runtimes removed from minimal base image
+# Runtimes removed from minimal base image (leave perl-base)
 python3.13
+python3.13-minimal
+libpython3.13-minimal
+python3-pip-whl
 perl
 
 # Documentation
@@ -35,3 +41,208 @@ manpages-dev
 # Editors (re-added by NGSW provisioning when needed)
 vim-tiny
 vim-common
+
+# Raspberry Pi Desktop metapackages
+rpd-applications
+rpd-common
+rpd-developer
+rpd-graphics
+rpd-plym-splash
+plymouth
+rpd-preferences
+rpd-theme
+rpd-utilities
+rpd-wallpaper
+rpd-wallpaper-trixie
+rpd-wayland-core
+rpd-wayland-extras
+rpd-x-core
+rpd-x-extras
+
+# Desktop shell chrome / panels / greeter
+wf-panel-pi
+wfplug-batt
+wfplug-bluetooth
+wfplug-clock
+wfplug-connect
+wfplug-cpu
+wfplug-cputemp
+wfplug-ejecter
+wfplug-gpu
+wfplug-menu
+wfplug-netman
+wfplug-power
+wfplug-squeek
+wfplug-updater
+wfplug-volumepulse
+lightdm
+lightdm-gtk-greeter
+piwiz
+pipanel
+pcmanfm
+lxpanel-pi
+lxsession
+lxsession-data
+lxsession-logout
+lxterminal
+wayvnc
+squeekboard
+swayidle
+swaylock
+grim
+slurp
+wlopm
+wlr-randr
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+xdg-desktop-portal-wlr
+
+# X fallback shell
+openbox
+
+# Preinstalled apps and addons
+chromium
+chromium-common
+chromium-l10n
+chromium-sandbox
+firefox
+vlc
+vlc-bin
+vlc-data
+vlc-l10n
+vlc-plugin-access-extra
+vlc-plugin-base
+vlc-plugin-notify
+vlc-plugin-qt
+vlc-plugin-samba
+vlc-plugin-skins2
+vlc-plugin-video-output
+vlc-plugin-video-splitter
+vlc-plugin-visualization
+geany
+geany-common
+thonny
+mousepad
+galculator
+rpi-imager
+rp-bookshelf
+pi-package
+pi-package-data
+pi-package-session
+agnostics
+realvnc-vnc-server
+rpi-connect
+rpi-connect-lite
+cups
+cups-browsed
+cups-client
+cups-common
+cups-core-drivers
+cups-daemon
+cups-filters
+cups-filters-core-drivers
+cups-ipp-utils
+cups-pk-helper
+cups-ppdc
+cups-server-common
+
+# Networking userland (keep dhcpcd-base, iproute2, netbase)
+openssh-client
+openssh-server
+openssh-sftp-server
+ssh
+wpasupplicant
+wireless-tools
+wireless-regdb
+iw
+rfkill
+avahi-daemon
+bluez
+bluez-firmware
+bluetooth
+pi-bluetooth
+blueman
+libldacbt-enc2
+dnsmasq-base
+nfs-common
+rpcbind
+ppp
+nftables
+ethtool
+net-tools
+iputils-ping
+usb-modeswitch
+usb-modeswitch-data
+
+# Unused Wi-Fi vendor firmware (Atheros); keep other firmware-* for Pi hardware
+firmware-atheros
+
+# Cron (unused on kiosk base; reinstall via provisioning if needed)
+cron
+cron-daemon-common
+
+# Extra fonts (keep fonts-dejavu-core via wayland-packages.txt; leave fontconfig)
+fonts-dejavu-mono
+fonts-freefont-ttf
+fonts-liberation
+fonts-liberation-sans-narrow
+fonts-urw-base35
+
+# Generic 64-bit kernel (Pi 3/4 fallback); Pi 5 uses rpi-2712 kept via wayland-packages.txt
+linux-image-rpi-v8
+linux-base-rpi-v8
+
+# Desktop residue
+# Note: adwaita/hicolor/at-spi/dconf/gsettings kept via wayland-packages.txt
+# (pulled by labwc/cage/ffmpeg/gstreamer GTK stack).
+evince
+ghostscript
+poppler-utils
+poppler-data
+imagemagick-7-common
+sane-airscan
+ipp-usb
+gvfs
+gvfs-backends
+gvfs-common
+gvfs-daemons
+gvfs-libs
+udisks2
+upower
+accountsservice
+colord
+colord-data
+adwaita-icon-theme-legacy
+desktop-file-utils
+lxmenu-data
+qt5ct
+autotouch
+feedbackd
+polkitd
+pkexec
+mate-polkit-common
+packagekit
+gnome-keyring
+gcr
+gcr4
+pinentry-gnome3
+dconf-cli
+aspell-en
+hunspell-en-us
+dictionaries-common
+xdg-user-dirs
+
+# Audio userland and daemons (video-only image; keep ffmpeg/gstreamer/VAAPI)
+# Note: libasound2t64 / libasound2-data / xdg-utils kept via wayland-packages.txt (Thorium).
+# Note: libpulse0 / libpipewire / libspa / timgm6mb kept via wayland-packages.txt
+# (pulled by ffmpeg/gstreamer video stack).
+# Note: alsa-utils may be reinstalled as a hard dep of raspi-config via
+# raspberrypi-sys-mods (first-boot rootfs expand) in wayland-packages.txt.
+alsa-utils
+alsa-ucm-conf
+alsa-topology-conf
+pipewire
+pipewire-bin
+pipewire-pulse
+wireplumber
+libpipewire-0.3-modules

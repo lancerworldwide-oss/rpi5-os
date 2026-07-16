@@ -9,6 +9,8 @@ services:
     environment:
       RPI_SOURCE_IMG: ${RPI_SOURCE_IMG:-}
       RPI_SOURCE_IMG_SHA256: ${RPI_SOURCE_IMG_SHA256:-}
+      THORIUM_DEB_URL: ${THORIUM_DEB_URL:-}
+      THORIUM_DEB_SHA256: ${THORIUM_DEB_SHA256:-}
       WORK_DIR: ${WORK_DIR:-/workspace/.work}
       CACHE_DIR: ${CACHE_DIR:-/workspace/.work}
       PROCESSING_DIR: ${PROCESSING_DIR:-/tmp/ddm-processing}

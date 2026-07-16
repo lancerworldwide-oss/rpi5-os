@@ -65,7 +65,8 @@ sudo mount --bind /dev "${ROOT_MOUNT}/dev"
 sudo mount -t devpts devpts "${ROOT_MOUNT}/dev/pts"
 sudo mount --bind /run "${ROOT_MOUNT}/run"
 
-sudo cp /usr/bin/qemu-aarch64-static "${ROOT_MOUNT}/usr/bin/"
+# -L: dereference host symlink (qemu-aarch64-static -> qemu-aarch64) into a real binary.
+sudo cp -L /usr/bin/qemu-aarch64-static "${ROOT_MOUNT}/usr/bin/qemu-aarch64-static"
 sudo chmod +x "${ROOT_MOUNT}/usr/bin/qemu-aarch64-static"
 
 export IMAGE_FILE MOUNT_BASE LOOP_DEV ROOT_MOUNT BOOT_MOUNT MAPPER_ROOT MAPPER_BOOT LOOP_NAME
