@@ -184,4 +184,4 @@ Kiosk systemd units, auto-login, and Thorium/cage CLI flags are expected to be c
 
 ## CI
 
-GitHub Actions workflow `.github/workflows/ci.yml` builds the container and runs `scripts/test.sh` in a privileged Docker runner on push and pull request.
+GitHub Actions workflow `.github/workflows/ci.yml` builds the container and runs `scripts/test.sh` in a privileged Docker runner on push and pull request. On success it publishes the `dist/` outputs (`.img.xz`, `.sha256`, and `.packages.txt`) as the `ngsw-minimal-image` workflow artifact (14-day retention).

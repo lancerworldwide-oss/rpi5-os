@@ -10,20 +10,37 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          df -h
 
       - name: Build image builder container
         run: docker build -t ddm-image-builder .
 
       - name: Run image pipeline tests
         run: |
-          docker run --rm --privileged \
+          docker run --rm --privileged --user root \
             -v "${GITHUB_WORKSPACE}:/workspace" \
             -e CACHE_DIR=/workspace/.work \
             -e PROCESSING_DIR=/tmp/ddm-processing \
             -e DIST_DIR=/workspace/dist \
             ddm-image-builder \
             bash /workspace/scripts/test.sh
+
+      - name: Upload image artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ngsw-minimal-image
+          path: |
+            dist/*.img.xz
+            dist/*.img.xz.sha256
+            dist/*.packages.txt
+          if-no-files-found: error
+          retention-days: 14
