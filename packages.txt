@@ -187,7 +187,9 @@ fonts-freefont-ttf
 fonts-liberation-sans-narrow
 fonts-urw-base35
 
-# Generic 64-bit kernel (Pi 3/4 fallback); Pi 5 uses rpi-2712 kept via wayland-packages.txt
+# Generic 64-bit kernel metas (Pi 3/4 fallback); Pi 5 uses rpi-2712 via wayland-packages.txt.
+# Versioned linux-{image,base}-*-rpi-v8 packages are purged by gen_image.sh after the
+# rpi-2712 stack is installed (metas alone do not remove them; autoremove skips kernels).
 linux-image-rpi-v8
 linux-base-rpi-v8
 

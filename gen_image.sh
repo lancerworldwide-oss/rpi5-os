@@ -186,6 +186,35 @@ ensure_wayland_stack_in_chroot() {
     "
 }
 
+# Meta packages in packages.txt do not remove versioned kernels (e.g.
+# linux-image-6.18.34+rpt-rpi-v8). Purge all rpi-v8 image/base packages by glob
+# after the Pi 5 (rpi-2712) kernel is ensured.
+purge_rpi_v8_kernels_in_chroot() {
+    log "Purging generic rpi-v8 kernel packages (versioned + meta)"
+    bash "${LIB_DIR}/chroot_exec.sh" /bin/bash -c "
+        set -uo pipefail
+        export DEBIAN_FRONTEND=noninteractive
+        mapfile -t pkgs < <(
+            {
+                dpkg-query -W -f='\${Package}\n' 'linux-image-*-rpi-v8' 2>/dev/null || true
+                dpkg-query -W -f='\${Package}\n' 'linux-base-*-rpi-v8' 2>/dev/null || true
+                for meta in linux-image-rpi-v8 linux-base-rpi-v8; do
+                    if dpkg-query -W -f='\${Status}' \"\${meta}\" 2>/dev/null | grep -q 'install ok installed'; then
+                        printf '%s\n' \"\${meta}\"
+                    fi
+                done
+            } | awk 'NF && !seen[\$0]++'
+        )
+        if [ \"\${#pkgs[@]}\" -eq 0 ]; then
+            echo 'No rpi-v8 kernel packages installed; skipping'
+            exit 0
+        fi
+        echo \"Purging rpi-v8 kernels: \${pkgs[*]}\"
+        apt-get purge -y \"\${pkgs[@]}\" || echo 'WARN: rpi-v8 kernel purge reported errors'
+        apt-get autoremove -y || true
+    "
+}
+
 install_thorium_in_chroot() {
     local url="$1"
     local checksum="${2:-}"
@@ -564,6 +593,9 @@ main() {
 
     log "Phase 5b: Ensure Wayland/kiosk stack (labwc, cage, GPU/VAAPI)"
     ensure_wayland_stack_in_chroot
+
+    log "Phase 5b2: Purge versioned rpi-v8 kernels (keep rpi-2712)"
+    purge_rpi_v8_kernels_in_chroot
 
     log "Phase 5c: Install Thorium browser"
     install_thorium_in_chroot "${thorium_url}" "${thorium_sha}"

@@ -208,6 +208,11 @@ main() {
     then
         die "versioned linux-image-*-rpi-v8 package still installed"
     fi
+    if bash "${LIB_DIR}/chroot_exec.sh" /bin/bash -c \
+        "dpkg-query -W -f='\${Package}\n' 'linux-base-*-rpi-v8' 2>/dev/null | grep -q ."
+    then
+        die "versioned linux-base-*-rpi-v8 package still installed"
+    fi
     pass "generic rpi-v8 kernel absent from image"
 
     for pkg in linux-image-rpi-2712 linux-base-rpi-2712; do

@@ -108,7 +108,7 @@ This file contains the list of packages that should be removed from the upstream
 - Includes Pi Desktop shell metas (`rpd-*`), panels/plugins, LightDM, and preinstalled apps (Chromium, Firefox, VLC, etc.)
 - Also strips networking userland (OpenSSH, Wi‑Fi, Bluetooth stack/apps, avahi, nfs, …) while keeping `dhcpcd-base`, `iproute2`, and `netbase`
 - Also strips cron (`cron`, `cron-daemon-common`) and extra fonts (`fonts-freefont-ttf`, `fonts-urw-base35`, …); keeps `fonts-dejavu-core` / `fonts-dejavu-mono` / `fonts-liberation` via `wayland-packages.txt`
-- Also strips the generic 64-bit kernel (`linux-image-rpi-v8` / `linux-base-rpi-v8`); keeps the Pi 5 kernel (`linux-image-rpi-2712`) via `wayland-packages.txt`
+- Also strips the generic 64-bit kernel metas (`linux-image-rpi-v8` / `linux-base-rpi-v8`); `gen_image.sh` then purges any versioned `linux-{image,base}-*-rpi-v8` packages. Keeps the Pi 5 kernel (`linux-image-rpi-2712`) via `wayland-packages.txt`
 - Also strips desktop residue left after `rpd-*` removal (gvfs, evince, PolicyKit chrome, icon themes, etc.)
 - Also strips Python minimal runtime (`python3.13-minimal`, …); leaves Debian essential `perl-base`
 - Also strips PipeWire audio daemons; the image is video-decode oriented. Intentional keep-backs (not purge failures): `alsa-utils` and `dconf-cli` (Depends of `raspi-config` via `raspberrypi-sys-mods`), `libldacbt-enc2` (Depends of `gstreamer1.0-plugins-bad`), `fonts-liberation` (Depends of Thorium), `fonts-dejavu-mono` (Depends of `fonts-dejavu-core`)
