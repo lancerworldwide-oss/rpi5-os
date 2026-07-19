@@ -57,9 +57,15 @@ libpulse0
 libpipewire-0.3-0t64
 libspa-0.2-modules
 timgm6mb-soundfont
+# Source: gstreamer1.0-plugins-bad (Depends: libldacbt-enc2)
+libldacbt-enc2
 
 # Source: system UI/Thorium fallback after font purge
 fonts-dejavu-core
+# Source: fonts-dejavu-core (Depends: fonts-dejavu-mono)
+fonts-dejavu-mono
+# Source: Thorium .deb (Depends: fonts-liberation)
+fonts-liberation
 
 # Source: Pi 5 boot kernel (do not purge rpi-2712 when removing rpi-v8)
 linux-image-rpi-2712
@@ -67,5 +73,8 @@ linux-base-rpi-2712
 
 # Source: first-boot rootfs expand (initramfs resize_early + rpi-resize.service).
 # Purging pi-bluetooth/desktop metas lets autoremove drop this; reinstall it.
-# Hard-deps raspi-config (and thus alsa-utils); that is not intentional audio userland.
+# Hard-deps raspi-config (and thus alsa-utils / dconf-cli); not intentional audio userland.
 raspberrypi-sys-mods
+# Source: raspi-config (Depends via raspberrypi-sys-mods)
+alsa-utils
+dconf-cli

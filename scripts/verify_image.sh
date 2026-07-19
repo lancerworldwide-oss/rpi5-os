@@ -184,17 +184,19 @@ main() {
     done
     pass "cron packages absent from image"
 
-    for pkg in fonts-freefont-ttf fonts-liberation fonts-urw-base35; do
+    for pkg in fonts-freefont-ttf fonts-urw-base35; do
         if package_installed_in_chroot "${pkg}"; then
             die "extra font package still installed: ${pkg}"
         fi
     done
     pass "extra fonts absent from image"
 
-    if ! package_installed_in_chroot fonts-dejavu-core; then
-        die "required font keep package missing: fonts-dejavu-core"
-    fi
-    pass "fonts-dejavu-core present"
+    for pkg in fonts-dejavu-core fonts-dejavu-mono fonts-liberation; do
+        if ! package_installed_in_chroot "${pkg}"; then
+            die "required font keep package missing: ${pkg}"
+        fi
+    done
+    pass "fonts-dejavu-core, fonts-dejavu-mono, and fonts-liberation present"
 
     for pkg in linux-image-rpi-v8 linux-base-rpi-v8; do
         if package_installed_in_chroot "${pkg}"; then
@@ -215,7 +217,7 @@ main() {
     done
     pass "Pi 5 rpi-2712 kernel present"
 
-    # alsa-utils may return as a hard dep of raspi-config (via raspberrypi-sys-mods
+    # alsa-utils / dconf-cli are hard deps of raspi-config (via raspberrypi-sys-mods
     # first-boot resize); that is not intentional audio userland. PipeWire stays out.
     for pkg in pipewire pipewire-pulse wireplumber; do
         if package_installed_in_chroot "${pkg}"; then
@@ -224,10 +226,22 @@ main() {
     done
     pass "PipeWire audio daemons absent from image"
 
+    if ! package_installed_in_chroot libldacbt-enc2; then
+        die "required package missing: libldacbt-enc2 (gstreamer1.0-plugins-bad)"
+    fi
+    pass "libldacbt-enc2 present"
+
     if ! package_installed_in_chroot raspberrypi-sys-mods; then
         die "required package missing: raspberrypi-sys-mods (first-boot rootfs resize)"
     fi
     pass "raspberrypi-sys-mods present"
+
+    for pkg in alsa-utils dconf-cli; do
+        if ! package_installed_in_chroot "${pkg}"; then
+            die "required raspi-config keep package missing: ${pkg}"
+        fi
+    done
+    pass "alsa-utils and dconf-cli present (raspi-config deps)"
 
     if ! bash "${LIB_DIR}/chroot_exec.sh" /bin/bash -c \
         '[ -x /usr/share/initramfs-tools/scripts/local-premount/resize_early ]'

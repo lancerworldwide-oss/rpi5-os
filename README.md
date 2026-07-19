@@ -107,11 +107,11 @@ This file contains the list of packages that should be removed from the upstream
 - Packages not installed on the upstream image are skipped
 - Includes Pi Desktop shell metas (`rpd-*`), panels/plugins, LightDM, and preinstalled apps (Chromium, Firefox, VLC, etc.)
 - Also strips networking userland (OpenSSH, Wi‑Fi, Bluetooth stack/apps, avahi, nfs, …) while keeping `dhcpcd-base`, `iproute2`, and `netbase`
-- Also strips cron (`cron`, `cron-daemon-common`) and extra fonts (`fonts-freefont-ttf`, `fonts-liberation`, `fonts-urw-base35`, …); keeps `fonts-dejavu-core` via `wayland-packages.txt`
+- Also strips cron (`cron`, `cron-daemon-common`) and extra fonts (`fonts-freefont-ttf`, `fonts-urw-base35`, …); keeps `fonts-dejavu-core` / `fonts-dejavu-mono` / `fonts-liberation` via `wayland-packages.txt`
 - Also strips the generic 64-bit kernel (`linux-image-rpi-v8` / `linux-base-rpi-v8`); keeps the Pi 5 kernel (`linux-image-rpi-2712`) via `wayland-packages.txt`
 - Also strips desktop residue left after `rpd-*` removal (gvfs, evince, PolicyKit chrome, icon themes, etc.)
 - Also strips Python minimal runtime (`python3.13-minimal`, …); leaves Debian essential `perl-base`
-- Also strips PipeWire audio daemons; the image is video-decode oriented. `alsa-utils` may return only as a hard dependency of `raspi-config` (pulled by `raspberrypi-sys-mods` for first-boot rootfs expand)—not as intentional audio userland
+- Also strips PipeWire audio daemons; the image is video-decode oriented. Intentional keep-backs (not purge failures): `alsa-utils` and `dconf-cli` (Depends of `raspi-config` via `raspberrypi-sys-mods`), `libldacbt-enc2` (Depends of `gstreamer1.0-plugins-bad`), `fonts-liberation` (Depends of Thorium), `fonts-dejavu-mono` (Depends of `fonts-dejavu-core`)
 - Also strips unused Atheros Wi‑Fi firmware (`firmware-atheros`); keeps other firmware needed for Pi hardware / kiosk video
 - Does **not** purge GPU/VAAPI/V4L/libav or Pi-relevant firmware stacks (`raspi-firmware`, `firmware-brcm80211`, …)
 - Wi‑Fi, SSH, audio daemons, and cron must be reinstalled by downstream provisioning if needed
@@ -122,10 +122,11 @@ This file contains the list of packages that should be removed from the upstream
 Packages reinstalled after purge so the kiosk Wayland base survives `autoremove`:
 
 - Compositors: `labwc`, `cage`, `xwayland`, `libwlroots-0.19`
-- Wayland/GPU/VAAPI anchors and video decode stacks (`ffmpeg`, gstreamer plugins)
+- Wayland/GPU/VAAPI anchors and video decode stacks (`ffmpeg`, gstreamer plugins; includes `libldacbt-enc2`)
+- Fonts: `fonts-dejavu-core`, `fonts-dejavu-mono`, `fonts-liberation` (Thorium)
 - Pi 5 kernel meta (`linux-image-rpi-2712`, `linux-base-rpi-2712`)
-- First-boot rootfs expand: `raspberrypi-sys-mods` (initramfs `resize_early` + `rpi-resize.service`; hard-deps `raspi-config`)
-- Optional annotated keep section for packages that must remain because Thorium, labwc/cage, or the video stack hard-depends on them after purge
+- First-boot rootfs expand: `raspberrypi-sys-mods` (initramfs `resize_early` + `rpi-resize.service`; hard-deps `raspi-config`, which pulls `alsa-utils` and `dconf-cli`)
+- Annotated keep section for packages that must remain because Thorium, labwc/cage, raspi-config, or the video stack hard-depends on them after purge
 
 ## gen_image.sh
 
